@@ -15,7 +15,7 @@ const BIG_JUMP_FORCE = 450;
 const ENEMY_SPEED = 30;
 const MOUSE_SPEED = 75;
 let isJumping = true;
-const FALL_DEATH = 400;
+const FALL_DEATH = 500;
 
 loadSound("woosh", "https://af-marquez.github.io/resources/Whoosh2.mp3");
 loadSound("pop", "https://af-marquez.github.io/resources/Pop.mp3");
@@ -69,93 +69,178 @@ loadSprite("cat", "24xQ4IY.png", {
         },
     },
 });
+//code for menu
+scene("menu", () => {
+    add([
+      text("Maui Game"),
+      pos(width() / 2.5, 80),
+      scale(3)
+    ]);
+    add([
+        sprite("cat"),
+        pos(width() / 20,100),
+        scale(10)
+    ]);
+    add([
+        rect(160, 20),
+        pos(width() / 2.5, 180),
+        "button",
+        {
+            clickAction: () => go('game',{ level: 0, score: 0 }),
+        },
+      ]);
+      add([
+        text("Play game"),
+        pos(width() / 2.5+50, 185),
+        color(0, 0, 0)
+      ]);
+      //instructions how to play
+      add([
+        rect(160, 20),
+        pos(width() / 2.5, 210),
+        "button",
+        {
+            clickAction: () => go('instructions'),
+        },
+      ]);
+      add([
+        text("Instructions"),
+        pos(width() / 2.5+30, 215),
+        color(0, 0, 0)
+      ]);
+      
+      add([
+        rect(160, 20),
+        pos(width() / 2.5, 240),
+        "button",
+        {
+			clickAction: () => window.open('https://af-marquez.github.io/index.html', '_blank'),
+		},
+      ]);
+      add([
+        text("Go to my website!"),
+        pos(width() / 2.5+15, 245),
+        color(0, 0, 0)
+      ]);
+      action("button", b => {
+        if (b.isHovered())
+          b.use(color(0.7, 0.7, 0.7));
+        else
+          b.use(color(1, 1, 1));
+        if (b.isClicked())
+            b.clickAction();
+      });
+  });
 
+//code for game
 scene("game", ({ level, score }) => {
     layers(["bg", "obj", "ui"], "obj");
-
-    loop(5.5, () => {
-        play("musica1")
-    });
 
     add([sprite("bg-night"), scale(4), layer("bg")]);
 
 
     const maps = [
         [
-            '-                                                                  ',
-            '-                    %                                              ',
-            '-   -                                                               ',
-            '-   -    €                                                           ',
-            '-   -    €      -     -                                               ',
-            '-   -    €                                                - - --         ',
-            '-   -    €                 -                                   - n      ',
-            '-   -    €                                                     -      ',
-            '-   -    €             -                              -        ------        ',
-            '-   -    €                                                           ',
-            '-   -             -            -                                      ',
-            '-   -                                              -                 ',
-            '-             -                                                     ',
-            '-           1                         -                     1         1',
-            '=====================                 ======================================',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '                    -                                                                  ',
+            '                    -                    %                                              ',
+            '                    -   -                                                               ',
+            '                    -   -    €                                                           ',
+            '                    -   -    €      -     -                                               ',
+            '                    -   -    €                                                - - --         ',
+            '                    -   -    €                 -                                   - n      ',
+            '                    -   -    €                                                     -      ',
+            '                    -   -    €             -                              -        ------        ',
+            '                    -   -    €                                                           ',
+            '                    -   -             -            -                                      ',
+            '                    -   -                                              -                 ',
+            '                    -             -                                                     ',
+            '                    e           1       e                 e                     1         1    e',
+            '                    =====================                 ======================================',
         ],
         [
-            '-      ---  n                                                      ',
-            '-        -                                                         ',
-            '-        --------    --  -    --   -    ----  -----    -     -     ',
-            '-                                                                  ',
-            '-                                                                  ',
-            '-   %     *-x--€                  €€€                      -       ',
-            '-                                                      -           ',
-            '-                                                                  ',
-            '-                   1                                              ',
-            '======================   ====================  ===============     ',
+            '',
+            '',
+            '',
+            '',
+            '                    -      ---  n                                                      ',
+            '                    -        -                                                         ',
+            '                    -        --------    --  -    --   -    ----  -----    -     -     ',
+            '                    -                                                                  ',
+            '                    -                                                                  ',
+            '                    -   %     *-x--€                  €€€                      -       ',
+            '                    -                                                      -           ',
+            '                    -                                                                  ',
+            '                    e                   1    e         11       e  e                   e',
+            '                    ======================   ====================  =====================',
         ],
         [
-            '-                                                              ',
-            '-                                                            n  ',
-            '-                                                               ',
-            '-                                               --   --     --  ',
-            '-                                                               ',
-            '-                                         --                    ',
-            '-             --                                               ',
-            '-                               --   --                        ',
-            '-                   1                                         1',
-            '====================    =======================================',
+            '',
+            '',
+            '',
+            '',
+            '                    -                                                              ',
+            '                    -                                                            n  ',
+            '                    -                                                               ',
+            '                    -                                               --   --     --  ',
+            '                    -                                                               ',
+            '                    -                                         --                    ',
+            '                    -             --                                               ',
+            '                    -                                    --                        ',
+            '                    e             1   1e    e           1   1   1   1            1e',
+            '                    ====================    =======================================',
         ],
         [
-            '                                                              ',
-            '                                                            n  ',
-            '                                                               ',
-            '                     ---                          --   ------- ',
-            '                                                               ',
-            '               ---                          --                 ',
-            ' --       --                --       1--                       ',
-            '                            ------------                       ',
-            '    --                                                        1',
-            '                                                               ',
+            '',
+            '',
+            '',
+            '',
+            '                                                                                  ',
+            '                                                                                n  ',
+            '                                                                                   ',
+            '                                         ---                          --   ------- ',
+            '                                                                                   ',
+            '                                   ---                          --                 ',
+            '                     --       --                ee       1ee                       ',
+            '                                                ------------                       ',
+            '                        --                                                         ',
+            '                                                                                   ',
         ],
         [
-            '-     €                                                          ',
-            '-     €                                                          ',
-            '-     €                                                         ',
-            '-     €  -  -                                                     ',
-            '-     €                                                         ',
-            '-     €                                                             ',
-            '-              -    -                                                      ',
-            '-              -    -           €€€€€€€                                   n      ',
-            '-           -  -    -  -     -       1-    -     1 -  -       1-  -    1   ',
-            '==========  ============     ==========    =========  ==========  ==================',
+            '',
+            '',
+            '',
+            '',
+            '                    -     €                                                          ',
+            '                    -     €                                                          ',
+            '                    -     €                                                         ',
+            '                    -     €  -  -                                                     ',
+            '                    -     €                                                         ',
+            '                    -     €                                                             ',
+            '                    -              -    -                                                      ',
+            '                    -              -    -           €€€€€€€                                         n  ',
+            '                    -           -  e  1 e  -     e       1e    e     1 e  e       1e  e    1   1 1     e',
+            '                    ==========  ============     ==========    =========  ==========  ==================',
         ],
         [
-            '-            %                                                      ',
-            '-                                                                  ',
-            '-                                     €                   -   €        ',
-            '-   €€€  €€€                                             -    €            ',
-            '-                          €€€     -      -             -     €        ',
-            '- -    -    ---                                        -      €       ',
-            '- -    -    ---             -                  €      -       n        ',
-            '-                                              -     -               ',
-            '                      -                                       =         ',
+            '',
+            '',
+            '',
+            '',
+            '                     -            %                                                      ',
+            '                     -                                                                  ',
+            '                     -                                     €                   -   €        ',
+            '                     -   €€€  €€€                                             -    €            ',
+            '                     -                          €€€     -      -             -     €        ',
+            '                     -      -    ---                                        -      €       ',
+            '                     ---    -    ---             -                  €      -       n        ',
+            '                     -                                              -     -               ',
+            '                                           -                                       =         ',
         ],
     ]
 
@@ -169,9 +254,9 @@ scene("game", ({ level, score }) => {
         '*': [sprite("surprise"), solid(), "coin-surprise"],
         '%': [sprite("surprise"), solid(), "mouse-surprise"],
         'x': [sprite("surprise"), solid(), "bad-surprise"],
-        '1': [sprite("enemy1"), solid(), body(), "dangerous"],
+        '1': [sprite("enemy1"), solid(), body(), "dangerous", {dir: -1}],
         'n': [sprite('next'), "next"],
-
+        'e': [sprite('box'),"edge", solid()],
     };
 
     const gameLevel = addLevel(maps[level], levelCfg);
@@ -226,7 +311,7 @@ scene("game", ({ level, score }) => {
 
     const player = add([
         sprite("cat"), solid(),
-        pos(50, 0),
+        pos(460, 200),
         body(),
         big(),
         origin("bot")
@@ -268,11 +353,18 @@ scene("game", ({ level, score }) => {
     });
 
     action("dangerous", (d) => {
-        d.move(-ENEMY_SPEED, 0)
+        d.move(d.dir * ENEMY_SPEED, 0)
+    });
+
+    collides("dangerous", "edge", (d) => {
+        d.dir = - d.dir
+    });
+    collides("dangerous", "dangerous", (d) => {
+        d.dir = - d.dir
     });
 
     player.collides("dangerous", (d) => {
-        if (isJumping) {
+        if (isJumping ) {
             play("pop")
             scoreLabel.value++
             scoreLabel.text = scoreLabel.value
@@ -357,9 +449,77 @@ scene("game", ({ level, score }) => {
 
 });
 
-
+//Code for losing scene ________________________________________
 scene("lose", ({ score }) => {
-    add([text("GAME OVER\n\nScore: " + score, 32), origin("center"), pos(width() / 2, height() / 2)])
+    add([text("GAME OVER\n\nScore: " + score, 32),
+    origin("center"),
+    pos(width() / 2, height() / 2)]),
+
+    add([
+        rect(160, 20),
+        pos(width() / 2.5,400),
+        "button",
+        {
+            clickAction: () => go('menu'),
+        },
+      ]);
+
+    add([
+        text("Go back!"),
+        pos(width() / 2.5+50, 405),
+        color(0, 0, 0)
+    ]);
+
+    action("button", b => {
+        if (b.isHovered())
+          b.use(color(0.7, 0.7, 0.7));
+        else
+          b.use(color(1, 1, 1));
+        if (b.isClicked())
+            b.clickAction();
+    });
 });
 
-start("game", { level: 0, score: 0 });
+//Code for instructions ________________________________________
+scene("instructions", () => {
+    add([
+        text("Instructions:",25),
+        color(1,0,1),
+        pos(width()/6, 80),
+        ]);
+    add([
+        text("Move right -- right arrow\nMove left  -- left arrow\n   Jump    -- [space]\n",15),
+        pos(width()/6, 120)
+    ]);
+    add([
+        sprite("next"),
+        pos(width() / 6, 180),
+    ]);
+    add([
+        text("           -- end of level",15),
+        pos(width() / 6, 190),
+    ]);
+    add([
+        rect(160, 20),
+        pos(width() / 2.5, 240),
+        "button",
+        {
+            clickAction: () => go('menu'),
+        },
+      ]);
+    add([
+        text("Go back!"),
+        pos(width() / 2.5+50, 245),
+        color(0, 0, 0)
+    ]);
+    action("button", b => {
+        if (b.isHovered())
+          b.use(color(0.7, 0.7, 0.7));
+        else
+          b.use(color(1, 1, 1));
+        if (b.isClicked())
+            b.clickAction();
+    });
+});
+
+start("menu");
