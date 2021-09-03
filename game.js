@@ -27,7 +27,7 @@ loadSound("musica2", "https://af-marquez.github.io/resources/musica2.mp3");
 loadSound("powerup", "https://af-marquez.github.io/resources/power-up.mp3");
 
 loadRoot('https://i.imgur.com/');
-loadSprite("bg-night", "JmkNHXj.png")
+loadSprite("bg-night", "fuCKiV0.png")
 loadSprite("coin", "3DvwyYT.png");
 loadSprite("enemy1", "kK7i2Z8.png");
 loadSprite('block', 'Tkvjtpx.png');
@@ -35,19 +35,19 @@ loadSprite("box", "x1myG3d.png");
 loadSprite("mouse", "KOH8f7G.png");
 loadSprite("surprise", "dqXMERa.png");
 loadSprite("next", "uwXvDcC.png");
-// loadSprite("cat_air", "WJpeAEC.png", {
-//     sliceX: 6,
-//     sliceY: 3,
-//     animSpeed: 0.8,
-//     gridWidth: 130,
-//     gridHeight: 60,
-//     anims: {
-//         cat_jump: {
-//             from: 0,
-//             to: 5,
-//         },
-//     },
-// });
+loadSprite("cat_air", "WJpeAEC.png", {
+    sliceX: 4,
+    sliceY: 1,
+    animSpeed: 0.8,
+    gridWidth: 77,
+    gridHeight: 20,
+    anims: {
+        cat_jump: {
+            from: 0,
+            to: 3,
+        },
+    },
+});
 loadSprite("cat", "24xQ4IY.png", {
     sliceX: 6,
     sliceY: 3,
@@ -146,7 +146,6 @@ scene("game", ({ level, score }) => {
             '',
             '',
             '',
-            '',
             '                    -                                                                  ',
             '                    -                    %                                              ',
             '                    -   -                                                               ',
@@ -168,6 +167,12 @@ scene("game", ({ level, score }) => {
             '',
             '',
             '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
             '                    -      ---  n                                                      ',
             '                    -        -                                                         ',
             '                    -        --------    --  -    --   -    ----  -----    -     -     ',
@@ -180,6 +185,12 @@ scene("game", ({ level, score }) => {
             '                    ======================   ====================  =====================',
         ],
         [
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
             '',
             '',
             '',
@@ -200,6 +211,12 @@ scene("game", ({ level, score }) => {
             '',
             '',
             '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
             '                                                                                  ',
             '                                                                                n  ',
             '                                                                                   ',
@@ -216,6 +233,12 @@ scene("game", ({ level, score }) => {
             '',
             '',
             '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
             '                    -     €                                                          ',
             '                    -     €                                                          ',
             '                    -     €                                                         ',
@@ -228,6 +251,12 @@ scene("game", ({ level, score }) => {
             '                    ==========  ============     ==========    =========  ==========  ==================',
         ],
         [
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
             '',
             '',
             '',
@@ -310,11 +339,13 @@ scene("game", ({ level, score }) => {
     }
 
     const player = add([
-        sprite("cat"), solid(),
+        solid(),
+        sprite("cat"),
         pos(460, 200),
         body(),
         big(),
-        origin("bot")
+        origin("bot"),
+        // health(8),
     ]);
 
     action("mouse", (m) => {
@@ -444,8 +475,6 @@ scene("game", ({ level, score }) => {
     keyRelease("space", () => {
         player.play("cat_stand");
     })
-
-    player.play("cat_stand");
 
 });
 
