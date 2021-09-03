@@ -1,2 +1,6 @@
-# maui_pg
-Maui is a platform game made with kaboom.js library.
+# Mauí game
+Platform game made with kaboom.js library.
+
+>By no means was this game intended to be perfect or bug free.
+>It was made with the intention of having fun and relax while practising 
+>and learning new things. 
