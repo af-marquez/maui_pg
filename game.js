@@ -27,7 +27,7 @@ loadSound("musica2", "https://af-marquez.github.io/resources/musica2.mp3");
 loadSound("powerup", "https://af-marquez.github.io/resources/power-up.mp3");
 
 loadRoot('https://i.imgur.com/');
-loadSprite("bg-night", "fuCKiV0.png")
+loadSprite("bg-night", "uT9IkEQ.png")
 loadSprite("coin", "3DvwyYT.png");
 loadSprite("enemy1", "kK7i2Z8.png");
 loadSprite('block', 'Tkvjtpx.png');
@@ -35,25 +35,12 @@ loadSprite("box", "x1myG3d.png");
 loadSprite("mouse", "KOH8f7G.png");
 loadSprite("surprise", "dqXMERa.png");
 loadSprite("next", "uwXvDcC.png");
-loadSprite("cat_air", "WJpeAEC.png", {
-    sliceX: 4,
-    sliceY: 1,
-    animSpeed: 0.8,
-    gridWidth: 77,
-    gridHeight: 20,
-    anims: {
-        cat_jump: {
-            from: 0,
-            to: 3,
-        },
-    },
-});
-loadSprite("cat", "24xQ4IY.png", {
+loadSprite("cat", "4Ochi6c.png", {
     sliceX: 6,
-    sliceY: 3,
+    sliceY: 5,
     animSpeed: 0.8,
     gridWidth: 130,
-    gridHeight: 60,
+    gridHeight: 100,
     anims: {
         cat_stand: {
             from: 0,
@@ -66,6 +53,14 @@ loadSprite("cat", "24xQ4IY.png", {
         cat_left: {
             from: 12,
             to: 17,
+        },
+        cat_jump_right: {
+            from: 18,
+            to: 21,
+        },
+        cat_jump_left: {
+            from: 24,
+            to: 27,
         },
     },
 });
@@ -345,6 +340,8 @@ scene("game", ({ level, score }) => {
         body(),
         big(),
         origin("bot"),
+        scale(1),
+        {dir: 1}
         // health(8),
     ]);
 
@@ -395,11 +392,16 @@ scene("game", ({ level, score }) => {
     });
 
     player.collides("dangerous", (d) => {
-        if (isJumping ) {
+        if (isJumping) {
             play("pop")
             scoreLabel.value++
             scoreLabel.text = scoreLabel.value
             destroy(d)
+            player.jump(CURRENT_JUMP_FORCE)
+        }
+        else if (!(player.grounded()) && (!(isJumping))){
+            destroy(d)
+            player.jump(CURRENT_JUMP_FORCE)
         } else {
             go("lose", { score: scoreLabel.value })
         }
@@ -426,6 +428,9 @@ scene("game", ({ level, score }) => {
 
     keyDown("left", () => {
         player.move(-MOVE_SPEED, 0)
+        keyPress("space", () => {       
+            player.play("cat_jump_left");
+        });
     });
 
     keyPress("left", () => {
@@ -440,6 +445,9 @@ scene("game", ({ level, score }) => {
 
     keyDown("right", () => {
         player.move(MOVE_SPEED, 0)
+        keyPress("space", () => {
+            player.play("cat_jump_right");
+        });
     });
 
     keyPress("right", () => {
@@ -468,10 +476,6 @@ scene("game", ({ level, score }) => {
         }
     });
 
-    // keyPress("space", () => {
-    //         player.play("cat_jump");
-    // });
-
     keyRelease("space", () => {
         player.play("cat_stand");
     })
@@ -484,6 +488,7 @@ scene("lose", ({ score }) => {
     origin("center"),
     pos(width() / 2, height() / 2)]),
 
+    
     add([
         rect(160, 20),
         pos(width() / 2.5,400),
@@ -517,12 +522,12 @@ scene("instructions", () => {
         pos(width()/6, 80),
         ]);
     add([
-        text("Move right -- right arrow\nMove left  -- left arrow\n   Jump    -- [space]\n",15),
+        text("Move right -- right arrow\nMove left  -- left arrow\n   Jump    --  [space]\n   Pause   --   [ESC]",15),
         pos(width()/6, 120)
     ]);
     add([
         sprite("next"),
-        pos(width() / 6, 180),
+        pos(width() / 3.5, 180),
     ]);
     add([
         text("           -- end of level",15),
