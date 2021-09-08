@@ -432,7 +432,9 @@ scene("game", ({ level, score }) => {
                 gameLevel.spawn("-", obj.gridPos.sub(0, 0))
             }
             if (obj.is("bad-surprise")) {
-                gameLevel.spawn("1", obj.gridPos.sub(0, 1))
+                const danger = gameLevel.spawn("1", obj.gridPos.sub(0, 1))
+                danger.use(body());
+                
                 destroy(obj)
                 gameLevel.spawn("-", obj.gridPos.sub(0, 0))
             }
