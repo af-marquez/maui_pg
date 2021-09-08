@@ -1,4 +1,3 @@
-
 //calls Kaboom functions
 kaboom({
     global: true,
@@ -12,11 +11,14 @@ const MOVE_SPEED = 120;
 const JUMP_FORCE = 360;
 let CURRENT_JUMP_FORCE = JUMP_FORCE;
 const BIG_JUMP_FORCE = 450;
-const ENEMY_SPEED = 30;
+const S_ENEMY_SPEED = 40;
 const MOUSE_SPEED = 75;
 let isJumping = true;
 const FALL_DEATH = 500;
+let current_level = 0;
+let current_score = 0;
 
+loadSound("music","https://af-marquez.github.io/resources/Scott%20Holmes%20Music%20-%20Upbeat%20Funk%20Pop.mp3")
 loadSound("woosh", "https://af-marquez.github.io/resources/Whoosh2.mp3");
 loadSound("pop", "https://af-marquez.github.io/resources/Pop.mp3");
 loadSound("s-lost", "https://af-marquez.github.io/resources/lost.mp3");
@@ -29,12 +31,13 @@ loadSound("powerup", "https://af-marquez.github.io/resources/power-up.mp3");
 loadRoot('https://i.imgur.com/');
 loadSprite("bg-night", "uT9IkEQ.png")
 loadSprite("coin", "3DvwyYT.png");
-loadSprite("enemy1", "kK7i2Z8.png");
+loadSprite("small_enemy", "kK7i2Z8.png");
 loadSprite('block', 'Tkvjtpx.png');
 loadSprite("box", "x1myG3d.png");
 loadSprite("mouse", "KOH8f7G.png");
 loadSprite("surprise", "dqXMERa.png");
 loadSprite("next", "uwXvDcC.png");
+loadSprite("invisible","9QrGT12.png");
 loadSprite("cat", "4Ochi6c.png", {
     sliceX: 6,
     sliceY: 5,
@@ -64,16 +67,34 @@ loadSprite("cat", "4Ochi6c.png", {
         },
     },
 });
-//code for menu
-scene("menu", () => {
+
+//splash screen___________________________________________
+scene("splash",() =>{
     add([
-      text("Maui Game"),
-      pos(width() / 2.5, 80),
-      scale(3)
+        text("Welcome \n\n  to\n\n",height()/40),
+        pos(width() / 3, 200),
+        color(rgba(1, 0.5, 0, 1)),
+        scale(3)
+    ]);
+    wait(4, () => {
+        go("menu")
+    });
+
+});
+
+//code for menu_________________________________________________
+scene("menu", () => {
+    add([sprite("bg-night"),
+    scale(3)]);
+    add([
+        text("Maui Game"),
+        pos(width() / 2.5, 80),
+        color(rgba(1, 0.5, 0, 1)),
+        scale(3)
     ]);
     add([
         sprite("cat"),
-        pos(width() / 20,100),
+        pos(width() / 20, 100),
         scale(10)
     ]);
     add([
@@ -81,434 +102,511 @@ scene("menu", () => {
         pos(width() / 2.5, 180),
         "button",
         {
-            clickAction: () => go('game',{ level: 0, score: 0 }),
+            clickAction: () => go('game', { level: 0, score: 0 }),
         },
-      ]);
-      add([
+    ]);
+    add([
         text("Play game"),
-        pos(width() / 2.5+50, 185),
-        color(0, 0, 0)
-      ]);
-      //instructions how to play
-      add([
+        pos(width() / 2.5 + 50, 185),
+        color(1, 1, 1)
+    ]);
+    add([
         rect(160, 20),
         pos(width() / 2.5, 210),
         "button",
         {
             clickAction: () => go('instructions'),
         },
-      ]);
-      add([
+    ]);
+    add([
         text("Instructions"),
-        pos(width() / 2.5+30, 215),
-        color(0, 0, 0)
-      ]);
-      
-      add([
+        pos(width() / 2.5 + 30, 215),
+        color(1, 1, 1)
+    ]);
+
+    add([
         rect(160, 20),
         pos(width() / 2.5, 240),
         "button",
         {
-			clickAction: () => window.open('https://af-marquez.github.io/index.html', '_blank'),
-		},
-      ]);
-      add([
+            clickAction: () => window.open('https://af-marquez.github.io/index.html', '_blank'),
+        },
+    ]);
+    add([
         text("Go to my website!"),
-        pos(width() / 2.5+15, 245),
-        color(0, 0, 0)
-      ]);
-      action("button", b => {
+        pos(width() / 2.5 + 15, 245),
+        color(1, 1, 1)
+    ]);
+    action("button", b => {
         if (b.isHovered())
-          b.use(color(0.7, 0.7, 0.7));
+            b.use(color(1, 0.3, 0, 1));
         else
-          b.use(color(1, 1, 1));
+            b.use(color(1, 0.5, 0, 1));
         if (b.isClicked())
             b.clickAction();
-      });
-  });
+    });
+});
 
-//code for game
+//code for game_______________________________________________________________
 scene("game", ({ level, score }) => {
-    layers(["bg", "obj", "ui"], "obj");
 
-    add([sprite("bg-night"), scale(4), layer("bg")]);
+        layers(["bg", "obj", "ui"], "obj");
+        camIgnore([ "ui"]);
+        add([sprite("bg-night"), scale(4), layer("bg")]);
 
+        const maps = [
+            [
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '                    .        -',
+                '                    .        -',
+                '                    .        -  n                                                      ',
+                '                    .        -                                                         ',
+                '                    .        --------    --  -    --   -    ----  -----    -     -     ',
+                '                    .                                                                  ',
+                '                    .                                                                  ',
+                '                    .   %     *-x--€                  €€€                      -       ',
+                '                    .                                                      -           ',
+                '                    .                                                                  ',
+                '                    e                   1    e         11       e  e                   e',
+                '                    ======================   ====================  =====================',
+            ],
+            [
+                '',
+                '',
+                '',
+                '',
+                '                               *',
+                '                   .                                       ',
+                '                   .    €               1                                   1       ',
+                '                   .    -     ---     e---e    -    €                    1 e--e        ',
+                '                   .                                -                 1 e---         ',
+                '                   .      €                              -  1     1 e----            ',
+                '                   .      -                              e----------                 ',
+                '                   .                                                                 ',
+                '                   .    €                                                          --  ',
+                '                   .    -                                                                €€',
+                '                   .                                                                     --',
+                '                   .      €                                                          ',
+                '                   .      -                                    n                     ',
+                '                   .                                                                 ',
+                '                   .                                           -        €           € ',
+                '                    =======     -     -     -     -     -         -     -     -     - ',
+            ], 
+            [
+                '',
+                '',
+                '',
+                '',
+                '',
+                '                    .                                                                          ',
+                '                    .                    %                                                     ',
+                '                    .   .                                                                      ',
+                '                    .   .   €€                                                                 ',
+                '                    .   .   €€      -     -                                     1     1           ',
+                '                    .       €€                                                e----------e        ',
+                '                    .       €€                 -                              -        n - -         ',
+                '                    .       €€                                                -          -        ',
+                '                    .       €€             -                                       -------      -       ',
+                '                    .       €€                                                    --                  ',
+                '                    .                 -            -                         --                        ',
+                '                    .                                                                       -            ',
+                '                    .             -                                                                      ',
+                '                    .           1       e                 e     1                1         1  1 1       e         ',
+                '                    =====================                 ===============================================',
+            ], 
+            [
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '                    .        -',
+                '                    .        -',
+                '                    .        -  n                                                      ',
+                '                    .        -                                                         ',
+                '                    .        --------    --  -    --   -    ----  -----    -     -     ',
+                '                    .                                                                  ',
+                '                    .                                                                  ',
+                '                    .   %     *-x--€                  €€€                      -       ',
+                '                    .                                                      -           ',
+                '                    .                                                                  ',
+                '                    e                   1    e         11       e  e                   e',
+                '                    ======================   ====================  =====================',
+            ],
+            [
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '                    -                                                              ',
+                '                    -                                                            n  ',
+                '                    -                                                               ',
+                '                    -                                               --   --     --  ',
+                '                    -                                                               ',
+                '                    -                                         --                    ',
+                '                    -             --                                               ',
+                '                    -                                    --                        ',
+                '                    e             1   1e    e           1   1   1   1            1e',
+                '                    ====================    =======================================',
+            ],
+            [
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '                                                                                  ',
+                '                                                                                n  ',
+                '                                                                                   ',
+                '                                         ---                          --   ------- ',
+                '                                                                                   ',
+                '                                   ---                          --                 ',
+                '                     --       --                ee       1ee                       ',
+                '                                                ------------                       ',
+                '                        --                                                         ',
+                '                                                                                   ',
+            ],
+            [
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '                    -     €                                                          ',
+                '                    -     €                                                          ',
+                '                    -     €                                                         ',
+                '                    -     €  -  -                                                     ',
+                '                    -     €                                                         ',
+                '                    -     €                                                             ',
+                '                    -              -    -                                                      ',
+                '                    -              -    -           €€€€€€€                                         n  ',
+                '                    -           -  e  1 e  -     e       1e    e     1 e  e       1e  e    1   1 1     e',
+                '                    ==========  ============     ==========    =========  ==========  ==================',
+            ],
+            [
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '                     -            %                                                      ',
+                '                     -                                                                  ',
+                '                     -                                     €                   -   €        ',
+                '                     -   €€€  €€€                                             -    €            ',
+                '                     -                          €€€     -      -             -     €        ',
+                '                     -      -    ---                                        -      €       ',
+                '                     ---    -    ---             -                  €      -       n        ',
+                '                     -                                              -     -               ',
+                '                                           -                                       =         ',
+            ],
+        ]
 
-    const maps = [
-        [
-            '',
-            '',
-            '',
-            '',
-            '',
-            '                    -                                                                  ',
-            '                    -                    %                                              ',
-            '                    -   -                                                               ',
-            '                    -   -    €                                                           ',
-            '                    -   -    €      -     -                                               ',
-            '                    -   -    €                                                - - --         ',
-            '                    -   -    €                 -                                   - n      ',
-            '                    -   -    €                                                     -      ',
-            '                    -   -    €             -                              -        ------        ',
-            '                    -   -    €                                                           ',
-            '                    -   -             -            -                                      ',
-            '                    -   -                                              -                 ',
-            '                    -             -                                                     ',
-            '                    e           1       e                 e                     1         1    e',
-            '                    =====================                 ======================================',
-        ],
-        [
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '                    -      ---  n                                                      ',
-            '                    -        -                                                         ',
-            '                    -        --------    --  -    --   -    ----  -----    -     -     ',
-            '                    -                                                                  ',
-            '                    -                                                                  ',
-            '                    -   %     *-x--€                  €€€                      -       ',
-            '                    -                                                      -           ',
-            '                    -                                                                  ',
-            '                    e                   1    e         11       e  e                   e',
-            '                    ======================   ====================  =====================',
-        ],
-        [
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '                    -                                                              ',
-            '                    -                                                            n  ',
-            '                    -                                                               ',
-            '                    -                                               --   --     --  ',
-            '                    -                                                               ',
-            '                    -                                         --                    ',
-            '                    -             --                                               ',
-            '                    -                                    --                        ',
-            '                    e             1   1e    e           1   1   1   1            1e',
-            '                    ====================    =======================================',
-        ],
-        [
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '                                                                                  ',
-            '                                                                                n  ',
-            '                                                                                   ',
-            '                                         ---                          --   ------- ',
-            '                                                                                   ',
-            '                                   ---                          --                 ',
-            '                     --       --                ee       1ee                       ',
-            '                                                ------------                       ',
-            '                        --                                                         ',
-            '                                                                                   ',
-        ],
-        [
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '                    -     €                                                          ',
-            '                    -     €                                                          ',
-            '                    -     €                                                         ',
-            '                    -     €  -  -                                                     ',
-            '                    -     €                                                         ',
-            '                    -     €                                                             ',
-            '                    -              -    -                                                      ',
-            '                    -              -    -           €€€€€€€                                         n  ',
-            '                    -           -  e  1 e  -     e       1e    e     1 e  e       1e  e    1   1 1     e',
-            '                    ==========  ============     ==========    =========  ==========  ==================',
-        ],
-        [
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '                     -            %                                                      ',
-            '                     -                                                                  ',
-            '                     -                                     €                   -   €        ',
-            '                     -   €€€  €€€                                             -    €            ',
-            '                     -                          €€€     -      -             -     €        ',
-            '                     -      -    ---                                        -      €       ',
-            '                     ---    -    ---             -                  €      -       n        ',
-            '                     -                                              -     -               ',
-            '                                           -                                       =         ',
-        ],
-    ]
+        const levelCfg = {
+            width: 20,
+            height: 20,
+            '=': [sprite('block'), solid()],
+            '€': [sprite("coin"), "coin"],
+            '-': [sprite('box'), solid()],
+            '.': [ sprite('invisible'),solid()],
+            'm': [sprite('mouse'), solid(), body(), "mouse", { dir: 1 }],
+            '*': [sprite("surprise"), solid(), "coin-surprise"],
+            '%': [sprite("surprise"), solid(), "mouse-surprise"],
+            'x': [sprite("surprise"), solid(), "bad-surprise"],
+            '1': [sprite("small_enemy"),body({maxVel: 100}),"dangerous", { dir: -1 }],
+            'n': [sprite('next'), "next"],
+            'e': [sprite('box'), "edge", solid()],
+        };
 
-    const levelCfg = {
-        width: 20,
-        height: 20,
-        '=': [sprite('block'), solid()],
-        '€': [sprite("coin"), "coin"],
-        '-': [sprite('box'), solid()],
-        'm': [sprite('mouse'), solid(), body(), "mouse"],
-        '*': [sprite("surprise"), solid(), "coin-surprise"],
-        '%': [sprite("surprise"), solid(), "mouse-surprise"],
-        'x': [sprite("surprise"), solid(), "bad-surprise"],
-        '1': [sprite("enemy1"), solid(), body(), "dangerous", {dir: -1}],
-        'n': [sprite('next'), "next"],
-        'e': [sprite('box'),"edge", solid()],
-    };
+        const gameLevel = addLevel(maps[level], levelCfg);
 
-    const gameLevel = addLevel(maps[level], levelCfg);
+        add([
+            text("Score:"),
+            pos(25, 6),
+            layer('ui'),
+        ]);
 
-    add([
-        text("Score:"),
-        pos(25, 6),
-    ]);
+        const scoreLabel = add([
+            text(score),
+            pos(80, 6),
+            layer('ui'),
+            {
+                value: score,
+            }
+        ]);
 
-    const scoreLabel = add([
-        text(score),
-        pos(90, 6),
-        layer('ui'),
-        {
-            value: score,
-        }
-    ]);
+        add([
+            text("level " + parseInt(level + 1)),
+            pos(25, 20),
+            layer('ui')
+        ]);
 
-    add([text("level " + parseInt(level + 1)), pos(25, 20)]);
-
-    function big() {
-        let timer = 0;
         let isBig = false;
-        return {
-            update() {
-                if (isBig) {
-                    timer -= dt();
-                    if (timer <= 0) {
-                        this.smallify();
+        function big() {
+            let timer = 0;
+            
+            return {
+                update() {
+                    if (isBig) {
+                        timer -= dt();
+                        if (timer <= 0) {
+                            this.smallify();
+                        }
+            
                     }
 
+                },
+                isBig() {
+                    return isBig
+                },
+                smallify() {
+                    this.scale = vec2(1);
+                    CURRENT_JUMP_FORCE = JUMP_FORCE;
+                    timer = 0;
+                    isBig = false;
+                },
+                biggify(time) {
+                    this.scale = vec2(2);
+                    CURRENT_JUMP_FORCE = BIG_JUMP_FORCE;
+                    timer = time;
+                    isBig = true;
                 }
-
-            },
-            isBig() {
-                return isBig
-            },
-            smallify() {
-                this.scale = vec2(1);
-                CURRENT_JUMP_FORCE = JUMP_FORCE;
-                timer = 0;
-                isBig = false;
-            },
-            biggify(time) {
-                this.scale = vec2(2);
-                CURRENT_JUMP_FORCE = BIG_JUMP_FORCE;
-                timer = time;
-                isBig = true;
             }
         }
-    }
 
-    const player = add([
-        solid(),
-        sprite("cat"),
-        pos(460, 200),
-        body(),
-        big(),
-        origin("bot"),
-        scale(1),
-        {dir: 1}
-        // health(8),
-    ]);
+        const player = add([
+            solid(),
+            sprite("cat"),
+            pos(460, 200),
+            body(),
+            big(),
+            "player",
+            origin("bot"),
+            scale(1),
+            { dir: 1 }
+        ]);
 
-    action("mouse", (m) => {
-        m.move(MOUSE_SPEED, 0)
-    });
+        action("mouse", (m) => {
+            m.move(m.dir * MOUSE_SPEED, 0)
+        });
 
-    player.on("headbump", (obj) => {
-        if (obj.is("coin-surprise")) {
-            gameLevel.spawn("€", obj.gridPos.sub(0, 1))
-            destroy(obj)
-            gameLevel.spawn("-", obj.gridPos.sub(0, 0))
-        }
-        if (obj.is("mouse-surprise")) {
-            gameLevel.spawn("m", obj.gridPos.sub(0, 1))
-            destroy(obj)
-            gameLevel.spawn("-", obj.gridPos.sub(0, 0))
-        }
-        if (obj.is("bad-surprise")) {
-            gameLevel.spawn("1", obj.gridPos.sub(0, 1))
-            destroy(obj)
-            gameLevel.spawn("-", obj.gridPos.sub(0, 0))
-        }
-    });
+        player.on("headbump", (obj) => {
+            if (obj.is("coin-surprise")) {
+                gameLevel.spawn("€", obj.gridPos.sub(0, 1))
+                destroy(obj)
+                gameLevel.spawn("-", obj.gridPos.sub(0, 0))
+            }
+            if (obj.is("mouse-surprise")) {
+                gameLevel.spawn("m", obj.gridPos.sub(0, 1))
+                destroy(obj)
+                gameLevel.spawn("-", obj.gridPos.sub(0, 0))
+            }
+            if (obj.is("bad-surprise")) {
+                gameLevel.spawn("1", obj.gridPos.sub(0, 1))
+                destroy(obj)
+                gameLevel.spawn("-", obj.gridPos.sub(0, 0))
+            }
+            if (obj.is("dangerous")) {
+                if (isBig){
+                    destroy(obj)
+                    player.smallify()
+                    play("powerup");
+                }
+                else{
+                    go("lose", { score: scoreLabel.value })
+                }           
+            }
+        });
 
-    player.collides("mouse", (m) => {
-        destroy(m)
-        player.biggify(6)
-        play("powerup");
-    });
+        player.collides("mouse", (m) => {
+            destroy(m)
+            player.biggify(6)
+            play("powerup");
+        });
 
-    player.collides("coin", (c) => {
-        destroy(c)
-        scoreLabel.value++
-        scoreLabel.text = scoreLabel.value
-        play("s-coin");
-    });
-
-    action("dangerous", (d) => {
-        d.move(d.dir * ENEMY_SPEED, 0)
-    });
-
-    collides("dangerous", "edge", (d) => {
-        d.dir = - d.dir
-    });
-    collides("dangerous", "dangerous", (d) => {
-        d.dir = - d.dir
-    });
-
-    player.collides("dangerous", (d) => {
-        if (isJumping) {
-            play("pop")
+        player.collides("coin", (c) => {
+            destroy(c)
             scoreLabel.value++
             scoreLabel.text = scoreLabel.value
-            destroy(d)
-            player.jump(CURRENT_JUMP_FORCE)
-        }
-        else if (!(player.grounded()) && (!(isJumping))){
-            destroy(d)
-            player.jump(CURRENT_JUMP_FORCE)
-        } else {
-            go("lose", { score: scoreLabel.value })
-        }
-    });
+            play("s-coin");
+        });
 
-    player.action(() => {
-        camPos(player.pos)
-        if (player.pos.y >= FALL_DEATH) {
-            go("lose", { score: scoreLabel.value })
-            play("s-lost");
-        }
-    });
+        action("dangerous", (d) => {
+            d.move(d.dir * S_ENEMY_SPEED, 0)
+        });
+        player.on("grounded", (obj) => {
+            if (obj.is("dangerous")) {
+                play("pop")
+                scoreLabel.value++
+                scoreLabel.text = scoreLabel.value
+                destroy(obj)
+                player.jump(CURRENT_JUMP_FORCE - 50)
+            }
+        });
 
-    player.collides("next", () => {
-        camScale(3);
-        play("s-miau");
-        wait(2, () => {
-            go("game", {
-                level: (level + 1),
-                score: scoreLabel.value,
+        player.collides("next", () => {
+            current_level++;
+            camScale(3);
+            play("s-miau");
+            wait(2, () => {
+                go("game", {
+                    level: (level + 1),
+                    score: scoreLabel.value,
+                })
             })
         })
-    })
 
-    keyDown("left", () => {
-        player.move(-MOVE_SPEED, 0)
-        keyPress("space", () => {       
-            player.play("cat_jump_left");
+        collides("dangerous", "edge", (d) => {
+            d.dir = - d.dir
         });
-    });
-
-    keyPress("left", () => {
-        if (player.grounded()) {
-            player.play("cat_left");
-        }
-    });
-
-    keyRelease("left", () => {
-        player.play("cat_stand");
-    })
-
-    keyDown("right", () => {
-        player.move(MOVE_SPEED, 0)
-        keyPress("space", () => {
-            player.play("cat_jump_right");
+        collides("dangerous", "dangerous", (d) => {
+            d.dir = - d.dir
         });
-    });
+        collides("mouse", "dangerous", (d,m) => {
+            d.dir = - d.dir
+            m.dir = - m.dir
+        });
+        collides("mouse", "edge", (m) => {
+            m.dir = - m.dir
+        });
 
-    keyPress("right", () => {
-        if (player.grounded()) {
+        player.collides("dangerous", (d) => {
+            if (isBig){
+                destroy(d)
+                player.smallify()
+                play("powerup");
+            }
+            else{
+                go("lose", { score: scoreLabel.value })
+            }
+        });
+
+        player.action(() => {
+            camPos(player.pos)
+            if (player.pos.y >= FALL_DEATH) {
+                player.smallify();
+                go("lose", { score: scoreLabel.value })
+            }
+        });
+
+
+        keyDown("left", () => {
+            player.move(-MOVE_SPEED, 0)
+            keyPress("space", () => {
+                player.play("cat_jump_left");
+            });
+        });
+
+        keyPress("left", () => {
+            if (player.grounded()) {
+                player.play("cat_left");
+            }
+        });
+
+        keyDown("right", () => {
             player.move(MOVE_SPEED, 0)
-            player.play("cat_right");
-        }
-    });
+            keyPress("space", () => {
+                player.play("cat_jump_right");
+            });
+        });
 
-    keyRelease("right", () => {
-        player.play("cat_stand");
-    })
+        keyPress("right", () => {
+            if (player.grounded()) {
+                player.play("cat_right");
+            }
+        });
 
+        player.action(() => {
+            if (player.grounded()) {
+                isJumping = false;
+            }
+        })
 
-    player.action(() => {
-        if (player.grounded()) {
-            isJumping = false;
-        }
-    })
+        keyDown("space", () => {
+            if (player.grounded()) {
+                isJumping = true
+                player.jump(CURRENT_JUMP_FORCE)
+                play("woosh")
+            }
+        });
 
-    keyDown("space", () => {
-        if (player.grounded()) {
-            isJumping = true
-            player.jump(CURRENT_JUMP_FORCE)
-            play("woosh")
-        }
-    });
-
-    keyRelease("space", () => {
-        player.play("cat_stand");
-    })
-
+        keyRelease(["space","right","left"], () => {
+            player.play("cat_stand");
+        })
 });
 
 //Code for losing scene ________________________________________
 scene("lose", ({ score }) => {
+    play("s-lost"),
     add([text("GAME OVER\n\nScore: " + score, 32),
     origin("center"),
     pos(width() / 2, height() / 2)]),
 
-    
     add([
         rect(160, 20),
-        pos(width() / 2.5,400),
+        pos(width() / 2.5, 375),
+        "button",
+        {
+            clickAction: () => go('game', { level: current_level, score: 0 }),
+        },
+    ]);
+
+    add([
+        text("Retry!"),
+        pos(width() / 2.5 + 50, 380),
+        color(1, 1, 1)
+    ]);
+
+    add([
+        rect(160, 20),
+        pos(width() / 2.5, 400),
         "button",
         {
             clickAction: () => go('menu'),
         },
-      ]);
+    ]);
 
     add([
         text("Go back!"),
-        pos(width() / 2.5+50, 405),
-        color(0, 0, 0)
+        pos(width() / 2.5 + 50, 405),
+        color(1, 1, 1)
     ]);
 
     action("button", b => {
         if (b.isHovered())
-          b.use(color(0.7, 0.7, 0.7));
+            b.use(color(1, 0.3, 0, 1));
         else
-          b.use(color(1, 1, 1));
+            b.use(color(1, 0.5, 0, 1));
         if (b.isClicked())
             b.clickAction();
     });
@@ -517,20 +615,20 @@ scene("lose", ({ score }) => {
 //Code for instructions ________________________________________
 scene("instructions", () => {
     add([
-        text("Instructions:",25),
-        color(1,0,1),
-        pos(width()/6, 80),
-        ]);
+        text("Instructions:", 25),
+        color(rgba(1, 1, 0, 1)),
+        pos(width() / 6, 80),
+    ]);
     add([
-        text("Move right -- right arrow\nMove left  -- left arrow\n   Jump    --  [space]\n   Pause   --   [ESC]",15),
-        pos(width()/6, 120)
+        text("Move right -- right arrow\nMove left  -- left arrow\n   Jump    --  [space]\n   Pause   --   [ESC]", 15),
+        pos(width() / 6, 120)
     ]);
     add([
         sprite("next"),
         pos(width() / 3.5, 180),
     ]);
     add([
-        text("           -- end of level",15),
+        text("           -- end of level", 15),
         pos(width() / 6, 190),
     ]);
     add([
@@ -540,20 +638,20 @@ scene("instructions", () => {
         {
             clickAction: () => go('menu'),
         },
-      ]);
+    ]);
     add([
         text("Go back!"),
-        pos(width() / 2.5+50, 245),
-        color(0, 0, 0)
+        pos(width() / 2.5 + 50, 245),
+        color(1, 1, 1)
     ]);
     action("button", b => {
         if (b.isHovered())
-          b.use(color(0.7, 0.7, 0.7));
+            b.use(color(1, 0.3, 0, 1));
         else
-          b.use(color(1, 1, 1));
+            b.use(color(1, 0.5, 0, 1));
         if (b.isClicked())
             b.clickAction();
     });
 });
 
-start("menu");
+start("splash");
