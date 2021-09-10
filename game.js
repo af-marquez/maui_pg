@@ -15,7 +15,7 @@ const S_ENEMY_SPEED = 40;
 const MOUSE_SPEED = 75;
 let isJumping = true;
 const FALL_DEATH = 500;
-let current_level = 0;
+
 let current_score = 0;
 
 loadSound("music","https://af-marquez.github.io/resources/Scott%20Holmes%20Music%20-%20Upbeat%20Funk%20Pop.mp3")
@@ -150,99 +150,12 @@ scene("menu", () => {
 //code for game_______________________________________________________________
 scene("game", ({ level, score }) => {
 
+
         layers(["bg", "obj", "ui"], "obj");
         camIgnore([ "ui"]);
         add([sprite("bg-night"), scale(4), layer("bg")]);
 
         const maps = [
-            [
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '                    .        -',
-                '                    .        -',
-                '                    .        -  n                                                      ',
-                '                    .        -                                                         ',
-                '                    .        --------    --  -    --   -    ----  -----    -     -     ',
-                '                    .                                                                  ',
-                '                    .                                                                  ',
-                '                    .   %     *-x--€                  €€€                      -       ',
-                '                    .                                                      -           ',
-                '                    .                                                                  ',
-                '                    e                   1    e         11       e  e                   e',
-                '                    ======================   ====================  =====================',
-            ],
-            [
-                '',
-                '',
-                '',
-                '',
-                '                               *',
-                '                   .                                       ',
-                '                   .    €               1                                   1       ',
-                '                   .    -     ---     e---e    -    €                    1 e--e        ',
-                '                   .                                -                 1 e---         ',
-                '                   .      €                              -  1     1 e----            ',
-                '                   .      -                              e----------                 ',
-                '                   .                                                                 ',
-                '                   .    €                                                          --  ',
-                '                   .    -                                                                €€',
-                '                   .                                                                     --',
-                '                   .      €                                                          ',
-                '                   .      -                                    n                     ',
-                '                   .                                                                 ',
-                '                   .                                           -        €           € ',
-                '                    =======     -     -     -     -     -         -     -     -     - ',
-            ], 
-            [
-                '',
-                '',
-                '',
-                '',
-                '',
-                '                    .                                                                          ',
-                '                    .                    %                                                     ',
-                '                    .   .                                                                      ',
-                '                    .   .   €€                                                                 ',
-                '                    .   .   €€      -     -                                     1     1           ',
-                '                    .       €€                                                e----------e        ',
-                '                    .       €€                 -                              -        n - -         ',
-                '                    .       €€                                                -          -        ',
-                '                    .       €€             -                                       -------      -       ',
-                '                    .       €€                                                    --                  ',
-                '                    .                 -            -                         --                        ',
-                '                    .                                                                       -            ',
-                '                    .             -                                                                      ',
-                '                    .           1       e                 e     1                1         1  1 1       e         ',
-                '                    =====================                 ===============================================',
-            ], 
-            [
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '                    .        -',
-                '                    .        -',
-                '                    .        -  n                                                      ',
-                '                    .        -                                                         ',
-                '                    .        --------    --  -    --   -    ----  -----    -     -     ',
-                '                    .                                                                  ',
-                '                    .                                                                  ',
-                '                    .   %     *-x--€                  €€€                      -       ',
-                '                    .                                                      -           ',
-                '                    .                                                                  ',
-                '                    e                   1    e         11       e  e                   e',
-                '                    ======================   ====================  =====================',
-            ],
             [
                 '',
                 '',
@@ -264,6 +177,93 @@ scene("game", ({ level, score }) => {
                 '                    -                                    --                        ',
                 '                    e             1   1e    e           1   1   1   1            1e',
                 '                    ====================    =======================================',
+            ],
+            [
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '                    .        -',
+                '                    .        -',
+                '                    .        -  n                                                      ',
+                '                    .        -                                                         ',
+                '                    .        --------    --  -    --   -    ----  -----    -           ',
+                '                    .                                                                  ',
+                '                    .                                                                  ',
+                '                    .   %     *-x--€                  €€€                      -       ',
+                '                    .                                                               -  ',
+                '                    .                                                                  ',
+                '                    e                   1    e         11       e  e              1    e',
+                '                    ======================   ====================  =====================',
+            ],
+            [
+                '',
+                '',
+                '',
+                '',
+                '',
+                '                    .                                                                          ',
+                '                    .                    %                                                     ',
+                '                    .   .                                                                      ',
+                '                    .   .   €€                                                                 ',
+                '                    .   .   €€      -     -                                     1     1           ',
+                '                    .       €€                                                e----------e        ',
+                '                    .       €€                 -                              -        n - -         ',
+                '                    .       €€                                                -          -        ',
+                '                    .       €€             -                                       -------      -       ',
+                '                    .       €€                                                    --                  ',
+                '                    .                 -            -                         --                        ',
+                '                    .                                                                       -            ',
+                '                    .             -                                                                      ',
+                '                    .           1       e                 e     1                1         1  1 1       e         ',
+                '                    =====================                 ====================e   e=========================',
+            ], 
+            [
+                '',
+                '',
+                '',
+                '',
+                '                               *',
+                '                   .                                       ',
+                '                   .    €               1                                   1       ',
+                '                   .    -     ---     e---e    -    €                    1 e--e        ',
+                '                   .                                -                 1 e---         ',
+                '                   .      €                              -  1     1 e----            ',
+                '                   .      -                              e----------                 ',
+                '                   .                                                                 ',
+                '                   .    €                                                          --  ',
+                '                   .    -                                                                €€',
+                '                   .                                                                     --',
+                '                   .      €                                                          ',
+                '                   .      -                                    n                     ',
+                '                   .                                                                 ',
+                '                   .                                           -        €           € ',
+                '                    =======     -     -     -     -     -         -     -     -     - ',
+            ],
+            [
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '                     -            %                                                      ',
+                '                     -                                                                  ',
+                '                     -                                     €                   -   €        ',
+                '                     -   €€€  €€€                                             -    €            ',
+                '                     -                          €€€     -      -             -     €        ',
+                '                     -      -    ---                                        -      €       ',
+                '                     ---    -    ---             -                  €      -       n        ',
+                '                     -                                              -     -               ',
+                '                                           -                                       =         ',
             ],
             [
                 '',
@@ -309,27 +309,6 @@ scene("game", ({ level, score }) => {
                 '                    -           -  e  1 e  -     e       1e    e     1 e  e       1e  e    1   1 1     e',
                 '                    ==========  ============     ==========    =========  ==========  ==================',
             ],
-            [
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '                     -            %                                                      ',
-                '                     -                                                                  ',
-                '                     -                                     €                   -   €        ',
-                '                     -   €€€  €€€                                             -    €            ',
-                '                     -                          €€€     -      -             -     €        ',
-                '                     -      -    ---                                        -      €       ',
-                '                     ---    -    ---             -                  €      -       n        ',
-                '                     -                                              -     -               ',
-                '                                           -                                       =         ',
-            ],
         ]
 
         const levelCfg = {
@@ -343,7 +322,7 @@ scene("game", ({ level, score }) => {
             '*': [sprite("surprise"), solid(), "coin-surprise"],
             '%': [sprite("surprise"), solid(), "mouse-surprise"],
             'x': [sprite("surprise"), solid(), "bad-surprise"],
-            '1': [sprite("small_enemy"),body({maxVel: 100}),"dangerous", { dir: -1 }],
+            '1': [sprite("small_enemy"), solid(),body({maxVel: 100}),"dangerous", { dir: -1 }],
             'n': [sprite('next'), "next"],
             'e': [sprite('box'), "edge", solid()],
         };
@@ -420,6 +399,8 @@ scene("game", ({ level, score }) => {
             m.move(m.dir * MOUSE_SPEED, 0)
         });
 
+        every("dangerous", (d) => d.use(body()));
+
         player.on("headbump", (obj) => {
             if (obj.is("coin-surprise")) {
                 gameLevel.spawn("€", obj.gridPos.sub(0, 1))
@@ -434,7 +415,6 @@ scene("game", ({ level, score }) => {
             if (obj.is("bad-surprise")) {
                 const danger = gameLevel.spawn("1", obj.gridPos.sub(0, 1))
                 danger.use(body());
-                
                 destroy(obj)
                 gameLevel.spawn("-", obj.gridPos.sub(0, 0))
             }
@@ -445,7 +425,7 @@ scene("game", ({ level, score }) => {
                     play("powerup");
                 }
                 else{
-                    go("lose", { score: scoreLabel.value })
+                    go("lose", { level: level, score: scoreLabel.value })
                 }           
             }
         });
@@ -475,14 +455,14 @@ scene("game", ({ level, score }) => {
                 player.jump(CURRENT_JUMP_FORCE - 50)
             }
         });
-
+//fix this so it doesnt jump levels
         player.collides("next", () => {
-            current_level++;
+            level++;
             camScale(3);
             play("s-miau");
             wait(2, () => {
                 go("game", {
-                    level: (level + 1),
+                    level: level,
                     score: scoreLabel.value,
                 })
             })
@@ -509,7 +489,7 @@ scene("game", ({ level, score }) => {
                 play("powerup");
             }
             else{
-                go("lose", { score: scoreLabel.value })
+                go("lose", { level: level, score: scoreLabel.value })
             }
         });
 
@@ -517,7 +497,7 @@ scene("game", ({ level, score }) => {
             camPos(player.pos)
             if (player.pos.y >= FALL_DEATH) {
                 player.smallify();
-                go("lose", { score: scoreLabel.value })
+                go("lose", { level: level, score: scoreLabel.value })
             }
         });
 
@@ -568,7 +548,7 @@ scene("game", ({ level, score }) => {
 });
 
 //Code for losing scene ________________________________________
-scene("lose", ({ score }) => {
+scene("lose", ({ level, score }) => {
     play("s-lost"),
     add([text("GAME OVER\n\nScore: " + score, 32),
     origin("center"),
@@ -579,7 +559,7 @@ scene("lose", ({ score }) => {
         pos(width() / 2.5, 375),
         "button",
         {
-            clickAction: () => go('game', { level: current_level, score: 0 }),
+            clickAction: () => go('game', { level: level, score: 0 }),
         },
     ]);
 
